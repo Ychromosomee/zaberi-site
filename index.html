@@ -380,7 +380,7 @@
     <a href="#how">Как работает</a>
     <a href="#pricing">Тарифы</a>
     <a href="#contacts">Контакты</a>
-    <a href="#contacts" class="nav-cta">Подключиться</a>
+    <a href="#cta" class="nav-cta">Подключиться</a>
   </div>
 </nav>
 
@@ -393,7 +393,7 @@
     <h1>Заказы напрямую.<br>Без <em>агрегаторов.</em></h1>
     <p class="hero-sub">Виджет для сайта ресторана за 5 минут. Клиенты заказывают у вас, деньги идут вам, данные остаются вашими.</p>
     <div class="hero-btns">
-      <a href="#contacts" class="btn-primary">Подключить ресторан</a>
+      <a href="#cta" class="btn-primary">Подключить ресторан</a>
       <a href="#how" class="btn-secondary">Как это работает</a>
     </div>
   </div>
@@ -531,11 +531,71 @@
 </section>
 
 <!-- CTA -->
-<div class="cta-band">
+<div class="cta-band" id="cta">
   <h2>Готовы подключить ресторан?</h2>
-  <p>Первые 3 месяца бесплатно для новых ресторанов. Без привязки карты.</p>
-  <a href="mailto:tech.solutions.buisness@gmail.com" class="btn-white">Написать нам</a>
+  <p>Оставьте заявку — свяжемся в течение часа и поможем с настройкой.</p>
+
+  <div style="max-width:480px;margin:2rem auto 0;background:rgba(0,0,0,0.2);border-radius:14px;padding:1.5rem">
+    <div style="display:flex;flex-direction:column;gap:0.75rem" id="lead-form">
+      <input id="lf-name" type="text" placeholder="Название ресторана *" style="padding:0.85rem 1rem;border-radius:8px;border:none;font-size:0.95rem;font-family:inherit;outline:none">
+      <input id="lf-phone" type="tel" placeholder="Телефон *" style="padding:0.85rem 1rem;border-radius:8px;border:none;font-size:0.95rem;font-family:inherit;outline:none">
+      <input id="lf-email" type="email" placeholder="Email *" style="padding:0.85rem 1rem;border-radius:8px;border:none;font-size:0.95rem;font-family:inherit;outline:none">
+      <button onclick="sendLead()" id="lf-btn" style="background:var(--black);color:var(--white);border:none;border-radius:8px;padding:0.9rem;font-family:inherit;font-size:0.95rem;font-weight:600;cursor:pointer;transition:opacity 0.2s">
+        Отправить заявку
+      </button>
+      <p id="lf-msg" style="font-size:0.85rem;min-height:1.2em;text-align:center"></p>
+    </div>
+  </div>
 </div>
+
+<script>
+async function sendLead() {
+  var name = document.getElementById('lf-name').value.trim()
+  var phone = document.getElementById('lf-phone').value.trim()
+  var email = document.getElementById('lf-email').value.trim()
+  var msg = document.getElementById('lf-msg')
+  var btn = document.getElementById('lf-btn')
+
+  if (!name || !phone || !email) {
+    msg.style.color = '#ffccaa'
+    msg.textContent = 'Пожалуйста, заполните все поля'
+    return
+  }
+
+  btn.disabled = true
+  btn.textContent = 'Отправляем...'
+  msg.textContent = ''
+
+  var text = '🆕 Новая заявка с zaberi.site\n\n' +
+    '🏠 Ресторан: ' + name + '\n' +
+    '📞 Телефон: ' + phone + '\n' +
+    '📧 Email: ' + email
+
+  try {
+    var res = await fetch('https://api.telegram.org/bot8893118300:AAFxXuEAGPC-EEmIPkYfBCnHMxBLThKMVTI/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: 6100151022, text: text })
+    })
+    var data = await res.json()
+    if (data.ok) {
+      msg.style.color = '#ccffcc'
+      msg.textContent = '✓ Заявка отправлена! Свяжемся в течение часа.'
+      document.getElementById('lf-name').value = ''
+      document.getElementById('lf-phone').value = ''
+      document.getElementById('lf-email').value = ''
+      btn.textContent = 'Отправлено'
+    } else {
+      throw new Error('Ошибка')
+    }
+  } catch(e) {
+    msg.style.color = '#ffccaa'
+    msg.textContent = 'Ошибка отправки. Напишите нам на email.'
+    btn.disabled = false
+    btn.textContent = 'Отправить заявку'
+  }
+}
+</script>
 
 <!-- CONTACTS -->
 <section class="contacts" id="contacts">
