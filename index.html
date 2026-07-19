@@ -581,16 +581,16 @@ async function sendLead() {
   btn.textContent = 'Отправляем...'
   msg.textContent = ''
 
-  var text = '🆕 Новая заявка с zaberi.site\n\n' +
-    '🏠 Ресторан: ' + name + '\n' +
-    '📞 Телефон: ' + phone + '\n' +
-    '📧 Email: ' + email
+  // Заявка уходит на наш бэкенд — токен бота хранится только на сервере
+  var API_URL = (location.hostname === 'localhost' || location.protocol === 'file:')
+    ? 'http://localhost:3001'
+    : 'https://api.zaberi.site'
 
   try {
-    var res = await fetch('https://api.telegram.org/bot8893118300:AAFxXuEAGPC-EEmIPkYfBCnHMxBLThKMVTI/sendMessage', {
+    var res = await fetch(API_URL + '/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: 6100151022, text: text })
+      body: JSON.stringify({ name: name, phone: phone, email: email })
     })
     var data = await res.json()
     if (data.ok) {
